@@ -7,6 +7,7 @@
 #include <math.h>
 #include <complex>
 #include <string.h>
+#include "utils.h"
 
 #define eV 1.602176565e-19
 #define boltzmann 1.38064852e-23
@@ -116,7 +117,6 @@ int main()
   int M; // number of iterations in solve_eqn
   int resolution; // number of solved points
   int nwarnings=0;
-  char garb[100];
   char file_output[150];
 
   ofstream warnings;
@@ -126,58 +126,61 @@ int main()
   warnings << std:: scientific;
 
   // Reading from input
-  cin >> garb;
-  cin >> garb >> garb;   // Cluster_charge_sign
-  cin >> garb >> garb;   // Atomic_mass_cluster
-  cin >> garb >> garb;   // Atomic_mass_first_product
-  cin >> garb >> garb;   // Atomic_mass_second_product
-  cin >> T0 >> garb;   // Temperature_(K)
-  cin >> P0 >> garb;   // Pressure_first_chamber(Pa)
-  cin >> garb >> garb;   // Pressure_second_chamber(Pa)
-  cin >> garb >> garb;   // Length_of_1st_chamber_(meters)
-  cin >> rmax >> garb;   // Length_of_skimmer_(meters)
-  cin >> garb >> garb;   // Length_between_skimmer_and_front_quadrupole_(meters)
-  cin >> garb >> garb;   // Length_between_front_quadrupole_and_back_quadrupole_(meters)
-  cin >> garb >> garb;   // Length_between_back_quadrupole_and_2nd_skimmer_(meters)
-  cin >> garb >> garb;   // Voltage0_(Volt)
-  cin >> garb >> garb;   // Voltage1_(Volt)
-  cin >> garb >> garb;   // Voltage2_(Volt)
-  cin >> garb >> garb;   // Voltage3_(Volt)
-  cin >> garb >> garb;   // Voltage4_(Volt)
-  cin >> garb >> garb;   // Number_of_realizations
-  cin >> dc >> garb;   // Radius_at_smallest_cross_section_skimmer_(m)
-  cin >> alpha_factor >> garb;   // Angle_of_skimmer_(multiple_of_PI)
-  cin >> garb >> garb; // Fragmentation_energy
-  cin >> garb >> garb;   // Energy_max_for_density_of_states_(Kelvin)
-  cin >> garb >> garb; // Energy_max_for_rate_constant_(Kelvin)
-  cin >> garb >> garb;   // Energy_resolution_(Kelvin)
-  cin >> garb >> garb;   // Gas_molecule_radius
-  cin >> m >> garb;   // Gas_molecule_mass_(kg)
-  cin >> ga >> garb;   // Adiabatic_index
-  cin >> garb >> garb;       // DC_quadrupole
-  cin >> garb >> garb;       // AC_quadrupole
-  cin >> garb >> garb;  // Radiofrequency_quadrupole
-  cin >> garb >> garb;   // half-distance_between_quadrupole_rods
-  cin >> file_output >> garb;   // Output_file_skimmer
-  cin >> garb >> garb;   // file_vibrational_temperatures_cluster
-  cin >> garb >> garb;   // file_vibrational_temperatures_first_product
-  cin >> garb >> garb;   // file_vibrational_temperatures_second_product
-  cin >> garb >> garb;   // file_rotational_temperatures_cluster
-  cin >> garb >> garb;   // file_rotational_temperatures_first_product
-  cin >> garb >> garb;   // file_rotational_temperatures_second_product
-  cin >> garb >> garb;   // file_electronic_energy_cluster
-  cin >> garb >> garb;   // file_electronic_energy_first_product
-  cin >> garb >> garb;   // file_electronic_energy_second_product
-  cin >> garb >> garb;   // output_file_density_cluster
-  cin >> garb >> garb;   // output_file_density_first_product
-  cin >> garb >> garb;   // output_file_density_second_product
-  cin >> garb >> garb;   // output_file_density_combined_products
-  cin >> garb >> garb;   // output_file_rate_constant
-  cin >> garb >> garb;   // output_file_probabilities
-  cin >> N >> garb;   // Number_of_iterations_in_solving_equation
-  cin >> M >> garb;   // Number_of_iterations_in_solving_equation2
-  cin >> resolution >> garb;   // Number_of_solved_points
-  cin >> tolerance >> garb;   // Tolerance_in_solving_equation                               
+  read_config(
+    std::cin,
+    nullptr,
+    nullptr,
+    (int*)nullptr,
+    nullptr,
+    nullptr,
+    &T0,
+    &P0,
+    (double*)nullptr,
+    nullptr,
+    &rmax,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    &dc,
+    &alpha_factor,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    &m,
+    &ga,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    file_output,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    &N,
+    &M,
+    &resolution,
+    &tolerance
+  );
   
   skimmer.open(file_output);
   skimmer << std:: scientific << "#Distance_Velocity_Temperature_Pressure_GasMassDensity_SpeedOfSound"<<endl;

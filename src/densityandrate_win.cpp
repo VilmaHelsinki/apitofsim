@@ -8,6 +8,7 @@
 #include <math.h>
 #include <complex>
 #include <string.h>
+#include "utils.h"
 
 #define kb 1.38064852e-23 //Boltzmann constant
 #define hbar 1.054571800e-34 //Reduced Planck constant
@@ -101,7 +102,6 @@ int main()
     double R_gas;
     double m_gas;
     double max_rate;
-    char garb[150];
     char file_frequencies_0[150];
     char file_frequencies_1[150];
     char file_frequencies_2[150];
@@ -117,60 +117,62 @@ int main()
     char file_electronic_energy_2[150];
     char file_rate_constant[150];
 
-
-    cin >> garb;
-    cin >> garb >> garb;  // Cluster_charge_sign
-    cin >> amu_0 >> garb; // Atomic_mass_cluster
-    cin >> amu_1 >> garb; // Atomic_mass_first_product
-    cin >> amu_2 >> garb; // Atomic_mass_second_product
-    cin >> T >> garb; // Temperature_(K)
-    cin >> P1 >> garb; // Pressure_first_chamber(Pa)
-    cin >> garb >> garb; // Pressure_second_chamber(Pa)
-    cin >> garb >> garb; // Length_of_1st_chamber_(meters)
-    cin >> garb >> garb; // Length_of_skimmer_(meters)
-    cin >> garb >> garb; // Length_between_skimmer_and_front_quadrupole_(meters)
-    cin >> garb >> garb; // Length_between_front_quadrupole_and_back_quadrupole_(meters)
-    cin >> garb >> garb; // Length_between_back_quadrupole_and_2nd_skimmer_(meters)
-    cin >> garb >> garb; // Voltage0_(Volt)
-    cin >> garb >> garb; // Voltage1_(Volt)
-    cin >> garb >> garb; // Voltage2_(Volt)
-    cin >> garb >> garb; // Voltage3_(Volt)
-    cin >> garb >> garb; // Voltage4_(Volt)
-    cin >> garb >> garb; // Number_of_realizations
-    cin >> garb >> garb; // Radius_at_smallest_cross_section_skimmer_(m)
-    cin >> garb >> garb; // Angle_of_skimmer_(multiple_of_PI)
-    cin >> fragmentation_energy >> garb; // Fragmentation_energy
-    cin >> energy_max >> garb; // Energy_max_for_density_of_states_(Kelvin)
-    cin >> energy_max_rate >> garb; // Energy_max_for_rate_constant_(Kelvin)
-    cin >> bin_width >> garb; // Energy_resolution_(Kelvin)
-    cin >> R_gas >> garb; // Gas_molecule_radius
-    cin >> m_gas >> garb; // Gas_molecule_mass_(kg)
-    cin >> garb >> garb; // Adiabatic_index
-    cin >> garb >> garb;       // DC_quadrupole
-    cin >> garb >> garb;       // AC_quadrupole
-    cin >> garb >> garb;  // Radiofrequency_quadrupole
-    cin >> garb >> garb;   // half-distance_between_quadrupole_rods
-    cin >> garb >> garb; // Output_file_skimmer
-    cin >> file_frequencies_0 >> garb; // file_vibrational_temperatures_cluster
-    cin >> file_frequencies_1 >> garb; // file_vibrational_temperatures_first_product
-    cin >> file_frequencies_2 >> garb; // file_vibrational_temperatures_second_product
-    cin >> file_rotations_0 >> garb; // file_rotational_temperatures_cluster
-    cin >> file_rotations_1 >> garb; // file_rotational_temperatures_first_product
-    cin >> file_rotations_2 >> garb; // file_rotational_temperatures_second_product
-    cin >> file_electronic_energy_0 >> garb; // file_electronic_energy_cluster
-    cin >> file_electronic_energy_1 >> garb; // file_electronic_energy_first_product
-    cin >> file_electronic_energy_2 >> garb; // file_electronic_energy_second_product
-    cin >> file_density_0 >> garb; // output_file_density_cluster
-    cin >> file_density_1 >> garb; // output_file_density_first_product
-    cin >> file_density_2 >> garb; // output_file_density_second_product
-    cin >> file_density_comb >> garb; // output_file_density_combined_products
-    cin >> file_rate_constant >> garb; // output_file_rate_constant
-    cin >> garb >> garb; // output_file_probabilities
-    cin >> garb >> garb; // Number_of_iterations_in_solving_equation
-    cin >> garb >> garb; // Number_of_iterations_in_solving_equation2
-    cin >> garb >> garb; // Number_of_solved_points
-    cin >> garb >> garb; // Tolerance_in_solving_equation                                      
-
+    // Use read_config to read all input fields
+    read_config(
+        std::cin,
+        nullptr, // title
+        nullptr, // cluster_charge_sign
+        &amu_0,
+        &amu_1,
+        &amu_2,
+        &T,
+        &P1,
+        (double*)nullptr, // pressure_second
+        nullptr, // L0
+        (double*)nullptr, // Lsk
+        nullptr, // L1
+        nullptr, // L2
+        nullptr, // L3
+        nullptr, // V0
+        nullptr, // V1
+        nullptr, // V2
+        nullptr, // V3
+        nullptr, // V4
+        nullptr, // N
+        nullptr, // dc
+        nullptr, // alpha_factor
+        &fragmentation_energy,
+        &energy_max,
+        &energy_max_rate,
+        &bin_width,
+        &R_gas,
+        &m_gas,
+        nullptr, // ga
+        nullptr, // dc_field
+        nullptr, // ac_field
+        nullptr, // radiofrequency
+        nullptr, // r_quadrupole
+        nullptr, // file_skimmer
+        file_frequencies_0,
+        file_frequencies_1,
+        file_frequencies_2,
+        file_rotations_0,
+        file_rotations_1,
+        file_rotations_2,
+        file_electronic_energy_0,
+        file_electronic_energy_1,
+        file_electronic_energy_2,
+        file_density_0,
+        file_density_1,
+        file_density_2,
+        file_density_comb,
+        file_rate_constant,
+        nullptr, // file_probabilities
+        nullptr, // N_iter
+        nullptr, // M_iter
+        nullptr, // resolution
+        nullptr  // tolerance
+    );
 
     cout << std::setprecision(3);
 
