@@ -9,12 +9,18 @@ cd source
 make
 ```
 
-Then run the simulation with the provided input and data
+Then run the simulation with the provided input and data using `run.sh`:
 
 ```bash
-./skimmer_win.x < input.in
-./densityandrate_win.x < input.in
-./apitof_pinhole.x < input.in
+./run.sh inputs/example
 ```
 
-Outputs are generated in [Output_Files](./Output_Files/) directory.
+You can also run each step manually with:
+
+```bash
+./bin/skimmer_win.x < inputs/example
+./bin/densityandrate_win.x < inputs/example
+./bin/apitof_pinhole.x < inputs/example
+```
+
+Outputs are generated in [work/out](./work/out/) directory.
