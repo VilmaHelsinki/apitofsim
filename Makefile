@@ -1,26 +1,33 @@
 # Makefile for APITOF codes
 
 CC = g++
-CFLAGS = -std=c++11 -O3 -Wall
-OPENMP = -fopenmp
+CFLAGS = -std=c++11 -O3 -Wall -fopenmp -march=native
 COMMON_UTILS = src/utils.h
+BINS_DEFAULT = bin/apitof_pinhole bin/densityandrate_win bin/skimmer_win
+
+ICXFLAGS = -fiopenmp -std=c++11 -O3 -Wall
 
 # Compile all codes
 .PHONY: all
-all: bin/apitof_pinhole.x bin/densityandrate_win.x bin/skimmer_win.x
+all: ${BINS_DEFAULT}
+all-compilers: $(BINS_DEFAULT:=.icx) $(BINS_DEFAULT:=.gcc) $(BINS_DEFAULT:=.clang)
 
-# Main code
-bin/apitof_pinhole.x: src/apitof_pinhole_original.cpp ${COMMON_UTILS}
+# Default compiler
+bin/%: src/%.cpp ${COMMON_UTILS}
 	${CC} ${CFLAGS} $< ${OPENMP} -o $@
 
-# Density and fragmentation rate code
-bin/densityandrate_win.x: src/densityandrate_win.cpp ${COMMON_UTILS}
-	${CC} ${CFLAGS} $< ${OPENMP} -o $@
+# Intel compiler
+bin/%.icx: src/%.cpp ${COMMON_UTILS}
+	icpx ${ICXFLAGS} $< -o $@
 
-# Fluid dynamics code
-bin/skimmer_win.x: src/skimmer_win.cpp ${COMMON_UTILS}
-	${CC} ${CFLAGS} $< ${OPENMP} -o $@
+# GCC
+bin/%.gcc: src/%.cpp ${COMMON_UTILS}
+	g++ ${CFLAGS} $< -o $@
+
+# Clang
+bin/%.clang: src/%.cpp ${COMMON_UTILS}
+	clang++ ${CFLAGS} $< -o $@
 
 # Remove executables
 clean:
-	rm -f bin/*.x
+	rm -f bin/*
