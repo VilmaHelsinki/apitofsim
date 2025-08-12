@@ -30,7 +30,7 @@ double f(double x, double * c)
 }
 
 // Find lower solution --> a=0 (subsonic flow), find upper solution --> a=1 (supersonic flow)
-double solve_eqn(double * c, double v0, double v1, double tolerance, int N, int M, int a, int &nwarnings, ofstream &warnings)
+double solve_eqn(double c[5], double v0, double v1, double tolerance, int N, int M, int a, int &nwarnings, ofstream &warnings)
 {
   double mesh;
   double v;
@@ -103,7 +103,7 @@ int main()
   double v_alert;
   double ga;
   double dc;
-  double * c;
+  double c[5];
   double alpha;
   double alpha_factor;
   double rmax;
@@ -188,8 +188,6 @@ int main()
   double rho0=m*P0/k/T0;
   alpha=alpha_factor*M_PI;
 
-  c=new double [5];
-
   vc=sqrt(2.0*ga*k*T0/(m*(ga+1)));
   v_alert=sqrt(2.0*k*ga*T0/(m*(ga-1)));
   
@@ -228,7 +226,6 @@ int main()
 
   warnings.close();
   skimmer.close();
-  delete c;
   return 0;
 }
 
