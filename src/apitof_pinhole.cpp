@@ -1357,42 +1357,6 @@ void init_vib_energy(double &vib_energy, float kT, double * density_cluster, dou
 
 
 
-// OLD Evaluate time to next collision
-void time_next_coll_old(double * v_cluster, double &v_cluster_norm, float n, float mobility_gas, float mobility_gas_inv, float R, float dt, double &z, float acc, float &delta_t, float &L, float &t, ofstream &positionz)
-{
-  double integral=0.0;
-  double P=1.0;
-  double c1;
-  double c2;
-  double v1;
-  double v_cluster_norm_xy = v_cluster[0]*v_cluster[0]+v_cluster[1]*v_cluster[1];
-  double r=unif(gen);
-
-  delta_t=0.0;
-  v_cluster_norm=sqrt(v_cluster_norm_xy+v_cluster[2]*v_cluster[2]);
-  c1=coll_freq(n, mobility_gas, mobility_gas_inv, R, v_cluster_norm);
-
-  while(r<P && z<L) 
-  {
-    v1=v_cluster[2];
-    v_cluster[2]+=acc*dt;
-    v_cluster_norm=sqrt(v_cluster_norm_xy+v_cluster[2]*v_cluster[2]);
-    c2=coll_freq(n, mobility_gas, mobility_gas_inv, R, v_cluster_norm);
-
-    integral+=(c1+c2)*dt/2.0;
-    P=exp(-integral);
-    delta_t+=dt;
-    z+=(v1+v_cluster[2])*dt/2.0;
-    c1=c2;
-    t+=dt;
-    //positionz << t  << " " << z << " " << c1 << endl;
-  }
-}
-
-// Evaluate time to next collision
-
-
-
 // Evaluate time to next collision
 void time_next_coll_quadrupole(int db_counter, double rate_constant, double * v_cluster, double &v_cluster_norm, float n1, float n2, float mobility_gas, float mobility_gas_inv, float R, double dt1, double dt2, double &z, double &x, double &y, double &delta_t, double &t_fragmentation, float first_chamber_end, float sk_end, float quadrupole_start, float quadrupole_end, float second_chamber_end, float acc1, float acc2, float acc3, float acc4, double &t, float m_gas, double * vel_skimmer, double * temp_skimmer, double * pressure_skimmer, double mesh_skimmer, double angular_velocity, double mathieu_factor, double dc_field, double ac_field, ofstream &tmp_evolution)
 {
