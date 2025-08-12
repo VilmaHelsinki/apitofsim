@@ -27,7 +27,6 @@
 #include <string.h>
 #include "utils.h"
 
-
 #define pi 3.14159265
 #define eV 1.602176565e-19
 #define boltzmann 1.38064852e-23
@@ -252,12 +251,8 @@ int main()
 
   int j;
   int ncoll;
-  int n_escaped;
-  int n_fragmented;
-  int n_escaped_old=0;
-  int n_fragmented_old=0;
-  int fragments_diff;
-  int intacts_diff;
+  int n_escaped_total;
+  int n_fragmented_total;
   int N;
   int nwarnings=0;
   int realizations;
@@ -298,23 +293,25 @@ int main()
   ofstream pinhole;
 
 
-  collisions.open("collisions.dat");
-  collisions << setprecision(12) << std::scientific;
-  intenergy.open("intenergy.dat");
-  intenergy << setprecision(12) << std::scientific;
-  warnings.open("warnings.dat");
-  fragments.open("fragments.dat");
-  fragments << setprecision(12) << std::scientific;
-  tmp.open("tmp.dat");
-  tmp << setprecision(12) << std::scientific;
-  tmp_evolution.open("tmp_evolution.dat");
-  tmp_evolution << setprecision(12) << std::scientific;
-  file_energy_distribution.open("energy_distribution.dat");
-  file_energy_distribution << setprecision(12)<<scientific;
-  final_position.open("final_position.dat");
-  final_position << setprecision(12) << std::scientific;
-  pinhole.open("pinhole.dat");
-  pinhole << setprecision(12) << std::scientific;
+  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+    collisions.open(Filenames::COLLISIONS);
+    collisions << setprecision(12) << std::scientific;
+    intenergy.open(Filenames::INTENERGY);
+    intenergy << setprecision(12) << std::scientific;
+    warnings.open(Filenames::WARNINGS);
+    fragments.open(Filenames::FRAGMENTS);
+    fragments << setprecision(12) << std::scientific;
+    tmp.open(Filenames::TMP);
+    tmp << setprecision(12) << std::scientific;
+    tmp_evolution.open(Filenames::TMP_EVOLUTION);
+    tmp_evolution << setprecision(12) << std::scientific;
+    file_energy_distribution.open(Filenames::ENERGY_DISTRIBUTION);
+    file_energy_distribution << setprecision(12)<<scientific;
+    final_position.open(Filenames::FINAL_POSITION);
+    final_position << setprecision(12) << std::scientific;
+    pinhole.open(Filenames::PINHOLE);
+    pinhole << setprecision(12) << std::scientific;
+  }
 
   // SEED OF RANDOM NUMBERS GENERATOR
   //srand48(2);
@@ -440,12 +437,14 @@ int main()
   second_chamber_end=L0+Lsk+L1+L2+L3;
   total_length=second_chamber_end;
 
-  cout << "Physical quantities:" << endl;
-  cout << "L1: " << first_chamber_end  << " m" << endl;
-  cout << "L2: " << sk_end << " m"  << endl;
-  cout << "L3: " << quadrupole_start << " m"  << endl;
-  cout << "L4: " << quadrupole_end << " m"  << endl;
-  cout << "L5: " << second_chamber_end << " m"  << endl;
+  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+    cout << "Physical quantities:" << endl;
+    cout << "L1: " << first_chamber_end  << " m" << endl;
+    cout << "L2: " << sk_end << " m"  << endl;
+    cout << "L3: " << quadrupole_start << " m"  << endl;
+    cout << "L4: " << quadrupole_end << " m"  << endl;
+    cout << "L5: " << second_chamber_end << " m"  << endl;
+  }
 
   time(&start);
   bonding_energy*=boltzmann; // convert in Joules
@@ -458,55 +457,69 @@ int main()
   P1=pressure_first;
   P2=pressure_second;
   gas_mean_free_path=mean_free_path(R_gas,kT,P2);
-  cout << "Cluster charge sign: " << cluster_charge_sign << endl;
-  cout << "Pressure 1st chamber: " << P1 << " Pa" << endl;
-  cout << "Pressure 2nd chamber: " << P2 << " Pa" << endl;
-  cout << "E1: " << E1 << " V/m, Acceleration: " << acc1 << " m/s^2"<< endl;
-  cout << "E2: " << E2 << " V/m, Acceleration: " << acc2 << " m/s^2"<< endl;
-  cout << "E3: " << E3 << " V/m, Acceleration: " << acc3 << " m/s^2"<< endl;
-  cout << "E4: " << E4 << " V/m, Acceleration: " << acc4 << " m/s^2"<< endl;
+  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+    cout << "Cluster charge sign: " << cluster_charge_sign << endl;
+    cout << "Pressure 1st chamber: " << P1 << " Pa" << endl;
+    cout << "Pressure 2nd chamber: " << P2 << " Pa" << endl;
+    cout << "E1: " << E1 << " V/m, Acceleration: " << acc1 << " m/s^2"<< endl;
+    cout << "E2: " << E2 << " V/m, Acceleration: " << acc2 << " m/s^2"<< endl;
+    cout << "E3: " << E3 << " V/m, Acceleration: " << acc3 << " m/s^2"<< endl;
+    cout << "E4: " << E4 << " V/m, Acceleration: " << acc4 << " m/s^2"<< endl;
+  }
   n1=particle_density(P1,kT);
   n2=particle_density(P2,kT);
-  cout << "Fragmentation energy: " << bonding_energy/boltzmann << " K (" << bonding_energy*kcal << " kcal/mol)" << endl;
-  cout << "Cluster mass: " << m_ion << " Kg" << endl;
-  cout << "Inertia momentum: " << inertia << " kg*m^2" << endl;
-  cout << "Cluster radius: " << R_cluster << " m" << endl;
-  cout << "Particle density 1st chamber: " << n1 << " 1/m^3" << endl;
-  cout << "Particle density 2nd chamber: " << n2 << " 1/m^3" << endl;
-  cout << "Cluster mean free path 1st chamber: " << mean_free_path(R_tot,kT,P1) << " m" << endl;
-  cout << "Cluster mean free path 2nd chamber: " << mean_free_path(R_tot,kT,P2) << " m" << endl;
-  cout << "Gas mean free path 1st chamber: " << mean_free_path(R_gas,kT,P1) << " m" << endl;
-  cout << "Gas mean free path 2nd chamber: " << mean_free_path(R_gas,kT,P2) << " m" << endl;
-  cout << "Gas density 1st chamber: " << n1 << " 1/m^3" << endl;
-  cout << "Gas density 2nd chamber: " << n2 << " 1/m^3" << endl;
-  cout << "Collision frequency 1st chamber (at v=0): " << coll_freq(n1, mobility_gas, mobility_gas_inv, R_tot, 0.0) << " 1/s" << endl;
-  cout << "Collision frequency 2nd chamber (at v=0): " << coll_freq(n2, mobility_gas, mobility_gas_inv, R_tot, 0.0) << " 1/s" << endl;
-  cout << "Standard deviation velocity_x: " << sqrt(boltzmann*T/m_ion) << " m/s" << endl;
-  cout << "R_tot: " << R_tot << " m" << endl;
+  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+    cout << "Fragmentation energy: " << bonding_energy/boltzmann << " K (" << bonding_energy*kcal << " kcal/mol)" << endl;
+    cout << "Cluster mass: " << m_ion << " Kg" << endl;
+    cout << "Inertia momentum: " << inertia << " kg*m^2" << endl;
+    cout << "Cluster radius: " << R_cluster << " m" << endl;
+    cout << "Particle density 1st chamber: " << n1 << " 1/m^3" << endl;
+    cout << "Particle density 2nd chamber: " << n2 << " 1/m^3" << endl;
+    cout << "Cluster mean free path 1st chamber: " << mean_free_path(R_tot,kT,P1) << " m" << endl;
+    cout << "Cluster mean free path 2nd chamber: " << mean_free_path(R_tot,kT,P2) << " m" << endl;
+    cout << "Gas mean free path 1st chamber: " << mean_free_path(R_gas,kT,P1) << " m" << endl;
+    cout << "Gas mean free path 2nd chamber: " << mean_free_path(R_gas,kT,P2) << " m" << endl;
+    cout << "Gas density 1st chamber: " << n1 << " 1/m^3" << endl;
+    cout << "Gas density 2nd chamber: " << n2 << " 1/m^3" << endl;
+    cout << "Collision frequency 1st chamber (at v=0): " << coll_freq(n1, mobility_gas, mobility_gas_inv, R_tot, 0.0) << " 1/s" << endl;
+    cout << "Collision frequency 2nd chamber (at v=0): " << coll_freq(n2, mobility_gas, mobility_gas_inv, R_tot, 0.0) << " 1/s" << endl;
+    cout << "Standard deviation velocity_x: " << sqrt(boltzmann*T/m_ion) << " m/s" << endl;
+    cout << "R_tot: " << R_tot << " m" << endl;
+  }
 
   //dt1=1.934e-16; 
   dt1=1.0e-3/coll_freq(n1, mobility_gas, mobility_gas_inv, R_tot, 0.0);
-  cout << "Time step t1: " << dt1 << " s"<< endl;
   dt2=1.0e-3/coll_freq(n2, mobility_gas, mobility_gas_inv, R_tot, 0.0);
   if(dt2>1.0/radiofrequency/1000.0) dt2=1.0/radiofrequency/1000.0;
-  cout << "Time step t2: " << dt2 << " s"<< endl<< endl;
+
+  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+    cout << "Time step t1: " << dt1 << " s"<< endl;
+    cout << "Time step t2: " << dt2 << " s"<< endl<< endl;
+  }
 
   // Evaluate energy distribution at equilibrium
   //energy_distribution(kT, density_cluster, energies_density, m_max_density, bin_width_density, file_energy_distribution);
 
-  n_escaped=0;
-  n_fragmented=0;
+  n_escaped_total=0;
+  n_fragmented_total=0;
   avg_ncoll=0;
 
-  probabilities << "#1_FragmentationEnergy 2_SurvivalProbability 3_Error" << endl;
-  fragments << "#1_Realization 2_Time 3_Position 4_FragmentationZone 5_PositionOfCollision 6_CollisionZone 7_VelocityAtCollision" << endl;
+  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+    probabilities << "#1_FragmentationEnergy 2_SurvivalProbability 3_Error" << endl;
+    fragments << "#1_Realization 2_Time 3_Position 4_FragmentationZone 5_PositionOfCollision 6_CollisionZone 7_VelocityAtCollision" << endl;
+  }
 
   //cout << bin_width_rate << endl;
   //evaluate_lifetime(kT,density_cluster,energies_density,m_max_density, m_max_rate, rate_const, bonding_energy, bin_width_rate);
   // N realizations
-  cout << "Simulating dynamics... (Fragments *, Intacts -)" << endl;
+  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+    cout << "Simulating dynamics... (Fragments *, Intacts -)" << endl;
+  }
+  #pragma omp parallel for
   for(j=0; j<N; j++)
   {
+    int n_escaped = 0;
+    int n_fragmented = 0;
 
     t=0.0;
     x=0.0;
@@ -554,9 +567,10 @@ int main()
         //tmp << delta_en << endl;
         if(delta_en > energy_max_rate)
         {
-          warnings << "Internal energy exceeds maximum rate energy by " << setprecision(3) << scientific << (delta_en-energy_max_rate)/energy_max_rate << endl;
-          nwarnings++;
-          probabilities << "# Internal energy exceeds maximum rate energy: " << setprecision(3) << scientific << (delta_en-energy_max_rate)/energy_max_rate << endl;
+          warn_omp(nwarnings, [&warnings, &probabilities, &delta_en, &energy_max_rate]() {
+            warnings << "Internal energy exceeds maximum rate energy by " << setprecision(3) << scientific << (delta_en-energy_max_rate)/energy_max_rate << endl;
+            probabilities << "# Internal energy exceeds maximum rate energy: " << setprecision(3) << scientific << (delta_en-energy_max_rate)/energy_max_rate << endl;
+          });
           delta_en=energy_max_rate;
           a=1;
         }
@@ -587,14 +601,22 @@ int main()
           n_fragmented++;
           //if(a==1) cout << "Fragmentation with max energy for rate exceeded. Realization: " << j+1 << endl;
           //if(coll_z>quadrupole_start && coll_z<quadrupole_end) 
-          fragments << j+1 << "\t" << t << "\t" << z << "\t" << zone(z, first_chamber_end, sk_end, quadrupole_start, quadrupole_end, second_chamber_end) << "\t" << coll_z << "\t" << zone(coll_z, first_chamber_end, sk_end, quadrupole_start, quadrupole_end, second_chamber_end) << "\t" << v_cluster_norm_old << endl;
+          if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+            #pragma omp critical
+            {
+              fragments << j+1 << "\t" << t << "\t" << z << "\t" << zone(z, first_chamber_end, sk_end, quadrupole_start, quadrupole_end, second_chamber_end) << "\t" << coll_z << "\t" << zone(coll_z, first_chamber_end, sk_end, quadrupole_start, quadrupole_end, second_chamber_end) << "\t" << v_cluster_norm_old << endl;
+            }
+          }
           break;
         }
 
         if(a==1)
         {
-          cout << "FATAL ERROR: The internal energy exceeded the max energy related to rate constant (so the cluster should fragment), but the cluster did not fragment. Realization: " << j+1 << endl << "--> EVALUATE FRAGMENTATION RATE CONSTANT AT HIGHER ENERGIES" << endl << "position= "  << scientific << z << endl;
-          exit(EXIT_FAILURE);
+          #pragma omp critical
+          {
+            cout << "FATAL ERROR: The internal energy exceeded the max energy related to rate constant (so the cluster should fragment), but the cluster did not fragment. Realization: " << j+1 << endl << "--> EVALUATE FRAGMENTATION RATE CONSTANT AT HIGHER ENERGIES" << endl << "position= "  << scientific << z << endl;
+            exit(EXIT_FAILURE);
+          }
         }
 
         // Keep track on number of collisions per realization
@@ -653,24 +675,39 @@ int main()
       {
         if(a==1)
         {
-          cout << "FATAL ERROR: The internal energy exceeded the max energy related to rate constant (so the cluster should fragment), but the cluster did not fragment" << endl;
-          exit(EXIT_FAILURE);
+          #pragma omp critical
+          {
+            cout << "FATAL ERROR: The internal energy exceeded the max energy related to rate constant (so the cluster should fragment), but the cluster did not fragment" << endl;
+            exit(EXIT_FAILURE);
+          }
         }
         n_escaped++; // Count how many clusters reached the end of the box intact
-        final_position << x << "\t" << y << endl;
+        if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+          #pragma omp critical
+          {
+            final_position << x << "\t" << y << endl;
+          }
+        }
         //cout << "Distance from exit on x: " << x << "and y: " << y << endl; // Distance from the exit on x and y axes
       }
     }
     avg_ncoll=(avg_ncoll*j+ncoll)/(j+1);
 
-    if((j+1)%progress==0 and j>0)
+    if(LOGLEVEL >= LOGLEVEL_NORMAL)
     {
-      fragments_diff=n_fragmented-n_fragmented_old;
-      intacts_diff=n_escaped-n_escaped_old;
-      cout << std::defaultfloat << setw(5) << setfill(' ') << fixed << setprecision(1) << 100.0*(j+1)/N << "% " << string(fragments_diff,'*') << string(intacts_diff,'-') << " (" << fragments_diff << "*, " << intacts_diff << "-) P=" << setprecision(3) << (double) n_escaped/(j+1) << endl;    
-      n_escaped_old=n_escaped;
-      n_fragmented_old=n_fragmented;
+      if((j+1)%progress==0 and j>0)
+      {
+        #pragma omp critical
+        {
+          cout << std::defaultfloat << setw(5) << setfill(' ') << fixed << setprecision(1) << 100.0*(j+1)/N << "% " << string(n_fragmented,'*') << string(n_escaped,'-') << " (" << n_fragmented << "*, " << n_escaped << "-) P=" << setprecision(3) << (double) n_escaped_total/(j+1) << endl;    
+        }
+      }
     }
+    #pragma omp atomic
+    n_fragmented_total += n_fragmented;
+    #pragma omp atomic
+    n_escaped_total += n_escaped;
+
     //if(j%100==0 and j>0) cout << std::defaultfloat << 100.0*j/N << "%" << " Intacts: " << setw(5) << setfill(' ') << n_escaped << " | Fragments: " << setw(5) << setfill (' ') << n_fragmented << " | Survival probability: "  << std::setprecision(3) << 1.0*n_escaped/(n_escaped+n_fragmented)  << endl;    
    // if(10*j%N==0)
    // {
@@ -679,13 +716,14 @@ int main()
    // }
   }
   
-  realizations=n_fragmented + n_escaped;
+  realizations=n_fragmented_total + n_escaped_total;
   cout << setprecision(3);
 
   if(N!=realizations) 
   {
-    warnings << "Number of total realizations does not correspond to input value!" << endl;
-    nwarnings++;
+    warn_omp(nwarnings, [&warnings]() {
+      warnings << "Number of total realizations does not correspond to input value!" << endl;
+    });
   }
   else
   {
@@ -695,11 +733,11 @@ int main()
   }
   //cout << "\033[F\033[J";
   cout << "Realizations: " << realizations <<endl;
-  cout << "Fragments: "<< n_fragmented << endl;
-  cout << "Intacts: "<< n_escaped << endl;
-  survival_probability=(float) n_escaped/realizations;
+  cout << "Fragments: "<< n_fragmented_total << endl;
+  cout << "Intacts: "<< n_escaped_total << endl;
+  survival_probability=(float) n_escaped_total/realizations;
   //error_survival_probability=sqrt(survival_probability*(1.0-survival_probability)/realizations);
-  error_survival_probability=evaluate_error(realizations,n_escaped);
+  error_survival_probability=evaluate_error(realizations,n_escaped_total);
   cout << "Average number of collisions: " << avg_ncoll << endl;
   cout << "Number of collision rejections close to the pinhole: " << counter_collision_rejections << endl;
   cout << endl << "SURVIVAL PROBABILITY: " << std::setprecision(6) << survival_probability << " +/-" << std::setprecision(4) << error_survival_probability << endl << endl;
@@ -712,15 +750,18 @@ int main()
   cout << "OUTPUT" << endl;
   cout << file_probabilities << endl<<endl;
 
-  warnings.close();
-  fragments.close();
-  intenergy.close();
+  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+    collisions.close();
+    intenergy.close();
+    warnings.close();
+    fragments.close();
+    tmp.close();
+    tmp_evolution.close();
+    file_energy_distribution.close();
+    final_position.close();
+    pinhole.close();
+  }
   probabilities.close();
-  collisions.close();
-  tmp.close();
-  tmp_evolution.close();
-  final_position.close();
-  pinhole.close();
 
   time(&end);
   seconds_tot=difftime(end,start);
@@ -728,7 +769,7 @@ int main()
   minutes=mod_func_int(seconds_tot/60,60);
   seconds=mod_func_int(seconds_tot,60);
   cout << "Computational time: " << setw(3) << setfill(' ') << hours << "h" << setw(2) << setfill('0') << minutes << "m" << setw(2) << setfill('0') << seconds << "s" << endl;
-  if(nwarnings>0) cout << "$$$$$$$$$ WARNING $$$$$$$$$" << endl << nwarnings << " warnings have been generated: check the file warnings.dat" << endl << "$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
+  if(nwarnings>0) cout << "$$$$$$$$$ WARNING $$$$$$$$$" << endl << nwarnings << " warnings have been generated: check the file " << Filenames::WARNINGS << endl << "$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
   delete[] rate_const;
   delete[] vel_skimmer;
   delete[] temp_skimmer;
@@ -1060,9 +1101,10 @@ void coord_change(double *v_cluster_versor, double *u_versor, double sintheta, d
 
   if (v_cluster_versor[2]==0)
   {
-    cout << endl << "FAILURE: z-component of cluster velocity is zero." << endl;
-    warnings << "z-component of cluster velocity is zero." << endl;
-    nwarnings++;
+    warn_omp(nwarnings, [&warnings]() {
+      cout << endl << "FAILURE: z-component of cluster velocity is zero." << endl;
+      warnings << "z-component of cluster velocity is zero." << endl;
+    });
     exit(EXIT_FAILURE);
   }
   // Coefficients
@@ -1164,14 +1206,16 @@ double evaluate_rate_const(double *rate_const, double energy, double bin_width_r
   else if(m==0)  return rate_const[0];
   else if(m>=m_max_rate)
   {
-    nwarnings++;
-    warnings << "delta_energy exceeded upper limit of rate_constant evaluation: delta_energy= " << energy << endl;
+    warn_omp(nwarnings, [&warnings, &energy]() {
+      warnings << "delta_energy exceeded upper limit of rate_constant evaluation: delta_energy= " << energy << endl;
+    });
     return rate_const[m_max_rate];
   }
   else
   {
-    nwarnings++;
-    warnings << "Rate constant evaluation failed: delta_energy= " << energy << endl;
+    warn_omp(nwarnings, [&warnings, &energy]() {
+      warnings << "Rate constant evaluation failed: delta_energy= " << energy << endl;
+    });
     return 0;
   }
 }
@@ -1562,9 +1606,15 @@ void time_next_coll_quadrupole(int db_counter, double rate_constant, double * v_
     //positionz << t << " " << z << " " << c1 << " " << c2 << " " << v1 << " " << v_cluster[2] << " " << P << " " << r << endl;
   }
   //if(z<first_chamber_end) tmp_evolution << z << " " << c1 << " " << n_skimmer << " " << mobility_gas_skimmer << " " << mobility_gas_inv_skimmer << " " << R << " " << v_rel_norm << endl;
-  if(z<first_chamber_end) tmp_evolution << z << " " << delta_t << " " << v_gas << " " << v_cluster_norm << " " << n_skimmer << endl;
-  
-  
+  if(LOGLEVEL >= LOGLEVEL_NORMAL) {
+    if(z<first_chamber_end) {
+      #pragma omp critical
+      {
+        tmp_evolution << z << " " << delta_t << " " << v_gas << " " << v_cluster_norm << " " << n_skimmer << endl;
+      }
+    }
+  }
+
 }
 
 
@@ -1598,8 +1648,9 @@ void draw_theta(double &theta, float n, float mobility_gas, float mobility_gas_i
   if(theta>pi)
   {
     theta=pi-1.0e-3;
-    nwarnings++;
-    warnings << "theta exceeded pi. random number r is: " << r << endl;
+    warn_omp(nwarnings, [&warnings, &r]() {
+      warnings << "theta exceeded pi. random number r is: " << r << endl;
+    });
   }
 }
 
@@ -1649,8 +1700,9 @@ void draw_theta_skimmer(double &theta, double z, float n1, float n2, float m_gas
   if(theta>pi)
   {
     theta=pi-1.0e-3;
-    nwarnings++;
-    warnings << "theta exceeded pi. random number r is: " << r << endl;
+    warn_omp(nwarnings, [&warnings, &r]() {
+      warnings << "theta exceeded pi. random number r is: " << r << endl;
+    });
   }
 }
 // Draw translational energy of cluster after the impact with carrier gas
@@ -1671,9 +1723,10 @@ double draw_vib_energy(double vib_energy_old, double * density_cluster, double *
 
   if(E>energy_max_density)
   {
-    cout << "\n\n\n WARNING!!! E: "<<E/boltzmann<<"\n\n\n";
-    nwarnings++;
-    warnings << "Energy is exceeding the density of states file. E: "<<E/boltzmann<<endl;
+    warn_omp(nwarnings, [&warnings, &E]() {
+      cout << "\n\n\n WARNING!!! E: "<<E/boltzmann<<"\n\n\n";
+      warnings << "Energy is exceeding the density of states file. E: "<<E/boltzmann<<endl;
+    });
     exit(EXIT_FAILURE);
   }
 
@@ -1709,9 +1762,10 @@ void redistribute_internal_energy(double &vib_energy, double &rot_energy, double
 
   if(E>energy_max_density) 
   {
-    cout << "\n\n\n WARNING!!! E: "<<E/boltzmann<<"\n\n\n";
-    nwarnings++;
-    warnings << "Energy is exceeding the density of states file. E: "<<E/boltzmann<<endl;
+    warn_omp(nwarnings, [&warnings, &E]() {
+      cout << "\n\n\n WARNING!!! E: "<<E/boltzmann<<"\n\n\n";
+      warnings << "Energy is exceeding the density of states file. E: "<<E/boltzmann<<endl;
+    });
     exit(EXIT_FAILURE);
   }
 
@@ -1781,8 +1835,9 @@ void draw_u_norm(double du, double boundary_u, double &u_norm, double theta, flo
 
   if(u_norm>boundary_u)
   {
-    nwarnings++;
-    warnings << "u_norm exceeded boundary of the integration. random number r is: " << r << endl;
+    warn_omp(nwarnings, [&warnings, &r]() {
+      warnings << "u_norm exceeded boundary of the integration. random number r is: " << r << endl;
+    });
   }
 }
 
@@ -1834,8 +1889,9 @@ void draw_u_norm_skimmer(double z, double du, double boundary_u, double &u_norm,
 
   if(u_norm>boundary_u)
   {
-    nwarnings++;
-    warnings << "u_norm exceeded boundary of the integration. random number r is: " << r << endl;
+    warn_omp(nwarnings, [&warnings, &r]() {
+      warnings << "u_norm exceeded boundary of the integration. random number r is: " << r << endl;
+    });
   }
 }
 

@@ -143,3 +143,32 @@ void read_config(
   read_field(config_in, resolution, buffer, "Number_of_solved_points");
   read_field(config_in, tolerance, buffer, "Tolerance_in_solving_equation");
 }
+
+const int LOGLEVEL_NONE = 0,
+          LOGLEVEL_NORMAL = 1,
+          LOGLEVEL_EXTRA = 2;
+const int LOGLEVEL = LOGLEVEL_NORMAL;
+
+namespace Filenames {
+  const char* const SKIMMER_WARNINGS = "work/log/warnings_skimmer.dat";
+
+  const char* const COLLISIONS = "work/log/collisions.dat";
+  const char* const INTENERGY = "work/log/intenergy.dat";
+  const char* const WARNINGS = "work/log/warnings.dat";
+  const char* const FRAGMENTS = "work/log/fragments.dat";
+  const char* const TMP = "work/log/tmp.dat";
+  const char* const TMP_EVOLUTION = "work/log/tmp_evolution.dat";
+  const char* const ENERGY_DISTRIBUTION = "work/log/energy_distribution.dat";
+  const char* const FINAL_POSITION = "work/log/final_position.dat";
+  const char* const PINHOLE = "work/log/pinhole.dat";
+}
+
+template <typename CallbackT>
+void warn_omp(int &nwarnings, CallbackT callback) {
+  #pragma omp atomic
+  nwarnings++;
+  #pragma omp critical
+  {
+    callback();
+  }
+}
