@@ -1390,58 +1390,6 @@ void time_next_coll_old(double * v_cluster, double &v_cluster_norm, float n, flo
 }
 
 // Evaluate time to next collision
-void time_next_coll(double rate_constant, double * v_cluster, double &v_cluster_norm, float n, float mobility_gas, float mobility_gas_inv, float R, float dt, double &z, float acc, float &delta_t, double &t_fragmentation, float &L, float &t, ofstream &positionz)
-{
-  double integral=0.0;
-  double P=1.0;
-  double c1;
-  double c2;
-  double v1;
-  double v_cluster_norm_xy = v_cluster[0]*v_cluster[0]+v_cluster[1]*v_cluster[1];
-  double r=unif(gen);
-
-  delta_t=0.0;
-  v_cluster_norm=sqrt(v_cluster_norm_xy+v_cluster[2]*v_cluster[2]);
-  c1=coll_freq(n, mobility_gas, mobility_gas_inv, R, v_cluster_norm);
-
-  if(rate_constant>0)
-  {
-    t_fragmentation=-log(r)/rate_constant;
-
-    while(r<P && z<L && delta_t<t_fragmentation) 
-    {
-      v1=v_cluster[2];
-      v_cluster[2]+=acc*dt;
-      v_cluster_norm=sqrt(v_cluster_norm_xy+v_cluster[2]*v_cluster[2]);
-      c2=coll_freq(n, mobility_gas, mobility_gas_inv, R, v_cluster_norm);
-
-      integral+=(c1+c2)*dt/2.0;
-      P=exp(-integral);
-      delta_t+=dt;
-      z+=(v1+v_cluster[2])*dt/2.0;
-      c1=c2;
-      t+=dt;
-      //positionz << t  << " " << z << " " << c1 << endl;
-    }
-  }
-  else
-  {
-    while(r<P && z<L) 
-    {
-      v1=v_cluster[2];
-      v_cluster[2]+=acc*dt;
-      v_cluster_norm=sqrt(v_cluster_norm_xy+v_cluster[2]*v_cluster[2]);
-      c2=coll_freq(n, mobility_gas, mobility_gas_inv, R, v_cluster_norm);
-
-      integral+=(c1+c2)*dt/2.0;
-      P=exp(-integral);
-      delta_t+=dt;
-      z+=(v1+v_cluster[2])*dt/2.0;
-      c1=c2;
-      t+=dt;
-    }
-  }
-}
 
 
 
