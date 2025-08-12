@@ -4,13 +4,14 @@ CC = g++
 CFLAGS = -std=c++11 -O3 -Wall -fopenmp -march=native
 COMMON_UTILS = src/utils.h
 BINS_DEFAULT = bin/apitof_pinhole bin/densityandrate_win bin/skimmer_win
+BINS_ALL_COMPILERS = $(BINS_DEFAULT:=.icx) $(BINS_DEFAULT:=.gcc) $(BINS_DEFAULT:=.clang)
 
 ICXFLAGS = -fiopenmp -std=c++11 -O3 -Wall
 
 # Compile all codes
-.PHONY: all
+.PHONY: all all-compilers clean clean-compilers clean-all
 all: ${BINS_DEFAULT}
-all-compilers: $(BINS_DEFAULT:=.icx) $(BINS_DEFAULT:=.gcc) $(BINS_DEFAULT:=.clang)
+all-compilers: ${BINS_ALL_COMPILERS}
 
 # Default compiler
 bin/%: src/%.cpp ${COMMON_UTILS}
@@ -30,4 +31,9 @@ bin/%.clang: src/%.cpp ${COMMON_UTILS}
 
 # Remove executables
 clean:
-	rm -f bin/*
+	rm -f $(BINS_DEFAULT)
+
+clean-compilers:
+	rm -f $(BINS_ALL_COMPILERS)
+
+clean-all: clean clean-compilers
