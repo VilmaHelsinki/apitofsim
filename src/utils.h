@@ -19,7 +19,7 @@ void read_field(std::istream &config_in, T *variable, char *buffer, const char *
 }
 
   
-template <typename T>
+template <>
 void read_field(std::istream &config_in, char *variable, char *buffer, const char *expected) {
   if (variable) {
     config_in >> variable >> buffer;
@@ -111,17 +111,17 @@ void read_config(
   read_field(config_in, N, buffer, "Number_of_realizations");
   read_field(config_in, dc, buffer, "Radius_at_smallest_cross_section_skimmer_(m)");
   read_field(config_in, alpha_factor, buffer, "Angle_of_skimmer_(multiple_of_PI)");
-  read_field(config_in, bonding_energy, buffer, "Fragmentation_energy");
+  read_field(config_in, bonding_energy, buffer, "Fragmentation_energy_(Kelvin)");
   read_field(config_in, energy_max, buffer, "Energy_max_for_density_of_states_(Kelvin)");
   read_field(config_in, energy_max_rate, buffer, "Energy_max_for_rate_constant_(Kelvin)");
   read_field(config_in, bin_width, buffer, "Energy_resolution_(Kelvin)");
-  read_field(config_in, R_gas, buffer, "Gas_molecule_radius");
+  read_field(config_in, R_gas, buffer, "Gas_molecule_radius_(meters)");
   read_field(config_in, m_gas, buffer, "Gas_molecule_mass_(kg)");
   read_field(config_in, ga, buffer, "Adiabatic_index");
   read_field(config_in, dc_field, buffer, "DC_quadrupole");
   read_field(config_in, ac_field, buffer, "AC_quadrupole");
   read_field(config_in, radiofrequency, buffer, "Radiofrequency_quadrupole");
-  read_field(config_in, r_quadrupole, buffer, "half-distance_between_quadrupole_rods");
+  read_field(config_in, r_quadrupole, buffer, "Half-distance_between_quadrupole_rods");
   read_field(config_in, file_skimmer, buffer, "Output_file_skimmer");
   read_field(config_in, file_frequencies_0, buffer, "file_vibrational_temperatures_cluster");
   read_field(config_in, file_frequencies_1, buffer, "file_vibrational_temperatures_first_product");
