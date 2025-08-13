@@ -147,7 +147,7 @@ void read_config(
 const int LOGLEVEL_NONE = 0,
           LOGLEVEL_NORMAL = 1,
           LOGLEVEL_EXTRA = 2;
-const int LOGLEVEL = LOGLEVEL_NORMAL;
+const int LOGLEVEL = LOGLEVEL_NONE;
 
 namespace Filenames {
   const char* const SKIMMER_WARNINGS = "work/log/warnings_skimmer.dat";
