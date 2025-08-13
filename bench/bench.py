@@ -1,6 +1,6 @@
-from os import makedirs, environ
+from os import makedirs, environ, listdir
 from os.path import join as pjoin
-from subprocess import run
+from subprocess import check_output, check_call
 from shutil import copyfile
 import pickle
 import time
@@ -10,6 +10,8 @@ def mkp(path): makedirs(path, exist_ok=True)
 VMS_BIN = environ["VMS_BIN"]
 BASE_INPUTS = environ["BASE_INPUTS"]
 COMPILERS = environ.get("COMPILERS", "").split(",")
+MAX_NUM_THREADS = int(environ.get("MAX_NUM_THREADS", 8))
+NUM_REALIZATIONS = 100
 
 def make_config(outdir, realizations):
     f"""
@@ -70,18 +72,18 @@ def make_config(outdir, realizations):
 common_out = pjoin("benchwork", "commonout")
 mkp(common_out)
 
-common_config = make_config(common_out, 50)
-run(pjoin(VMS_BIN, "skimmer_win"), input=common_config, text=True)
-run(pjoin(VMS_BIN, "densityandrate_win"), input=common_config, text=True)
+common_config = make_config(common_out, NUM_REALIZATIONS)
+check_call(pjoin(VMS_BIN, "skimmer_win"), input=common_config, text=True)
+check_call(pjoin(VMS_BIN, "densityandrate_win"), input=common_config, text=True)
 
 times = {}
 for compiler in COMPILERS:
-    for cores in range(1, 9):
+    for cores in range(1, MAX_NUM_THREADS + 1):
         out = pjoin("benchwork", f"output_{cores}")
         mkp(out)
         for fn in listdir(common_out):
             copyfile(pjoin(common_out, fn), pjoin(out, fn))
-        config = make_config(out, 100)
+        config = make_config(out, NUM_REALIZATIONS)
         bin_path = pjoin(VMS_BIN, "apitof_pinhole")
         if compiler:
             bin_path += "." + compiler
@@ -105,7 +107,7 @@ for compiler in COMPILERS:
             "sys_time": sys_time,
             "wall_time": wall_time,
             "loop_time": float(match.group(1)) if match else None,
-            "iters_per_second": 100 / float(match.group(1)) if match else None,
+            "iters_per_second": NUM_REALIZATIONS * 1_000_000 / float(match.group(1)) if match else None,
         }
 
 with open("times.pkl", "wb") as outf:

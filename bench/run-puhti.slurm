@@ -10,4 +10,5 @@ module load gcc/14.2.0
 make all all-gcc
 module load intel-oneapi-compilers/2025.0.4
 make all-icx
-VMS_BIN=$(pwd)/../bin BASE_INPUTS=$(pwd)/../inputs/example COMPILERS='icx,gcc' python3.11 bench.py
+cd bench
+VMS_BIN=$(pwd)/../bin BASE_INPUTS=$(pwd)/../inputs/example COMPILERS='icx,gcc' MAX_NUM_THREADS=80 python3.11 bench.py
