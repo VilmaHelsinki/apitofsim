@@ -72,7 +72,6 @@ void update_param(double &v_cluster_norm, double *v_cluster, double *v_cluster_v
 void draw_u_norm_skimmer(double z, double du, double boundary_u, double &u_norm, double theta, float n1, float n2, float m_gas, float mobility_gas, float mobility_gas_inv, float R, double * v_cluster, double v_gas, double pressure, double temperature, double first_chamber_end, double sk_end, double costheta, ofstream &warnings, int &nwarnings);
 void evaluate_relative_velocity(double z, double * v_cluster, double &v_rel_norm, double v_gas, double * v_rel, double first_chamber_end, double sk_end);
 double draw_vib_energy(double vib_energy_old, double * density_cluster, double * energies_density, double energy_max_density, float reduced_mass, double u_norm, double v_cluster_norm, double theta, ofstream &warnings, int &nwarnings);
-void collision(double * v_cluster, double * omega, double u_norm, double v_cluster_norm, double costheta, double sintheta, float R_cluster, double vib_energy, double vib_energy_old, float m_ion, float m_gas, float temperature, ofstream  &warnings, int &nwarnings);
 void update_velocities(double * v_cluster, double &v_cluster_norm, double * v_rel, double v_gas);
 void update_rot_vel(double * omega, double rot_energy_old, double rot_energy);
 void update_rot_vel_old(double * omega, double rot_energy, double inertia);
