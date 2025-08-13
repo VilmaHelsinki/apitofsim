@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <chrono>
 #include <math.h>
 #include <complex>
 #include <string.h>
@@ -105,11 +106,6 @@ int main()
   mt19937 root_gen = mt19937(42ull);
   unsigned long long root_seed = root_gen();
 
-  time_t start;
-  time_t loop_start;
-  time_t end;
-
-  int seconds_tot;
   int hours;
   int seconds;
   int minutes;
@@ -395,7 +391,8 @@ int main()
     std::cout << "L5: " << second_chamber_end << " m"  << endl;
   }
 
-  time(&start);
+  auto start = std::chrono::high_resolution_clock::now();
+
   bonding_energy*=boltzmann; // convert in Joules
   mathieu_factor=q/(m_ion*r_quadrupole*r_quadrupole); 
   angular_velocity=2.0*M_PI*radiofrequency;
@@ -465,7 +462,7 @@ int main()
   }
   // All firstprivate variables *should* be constant within the loop
   // Truly private variables are declared in the loop
-  time(&loop_start);
+  auto loop_start = std::chrono::high_resolution_clock::now();
   #pragma omp parallel for \
     default(none) \
     firstprivate( \
@@ -768,14 +765,17 @@ int main()
     pinhole.close();
     probabilities.close();
   }
+  auto end = std::chrono::high_resolution_clock::now();
 
-  std::cout << endl << "<loop_time>" << difftime(end, loop_start) << "</loop_time>" << endl << endl;
-  time(&end);
-  seconds_tot=difftime(end,start);
+  auto loop_time = std::chrono::duration_cast<std::chrono::microseconds>(end - loop_start);
+  std::cout << endl << "<loop_time>" << loop_time.count() << "</loop_time>" << endl << endl;
+  auto total_time = end - start;
+  auto seconds_tot=std::chrono::duration_cast<std::chrono::seconds>(total_time).count();
+  auto microseconds_tot=std::chrono::duration_cast<std::chrono::microseconds>(total_time).count();
   hours=(int) (seconds_tot/3600);
   minutes=mod_func_int(seconds_tot/60,60);
   seconds=mod_func_int(seconds_tot,60);
-  std::cout << "Computational time: " << setw(3) << setfill(' ') << hours << "h" << setw(2) << setfill('0') << minutes << "m" << setw(2) << setfill('0') << seconds << "s" << endl;
+  std::cout << "Computational time: " << setw(3) << setfill(' ') << hours << "h" << setw(2) << setfill('0') << minutes << "m" << setw(2) << setfill('0') << seconds << "s" << microseconds_tot << "us" << endl;
   if(nwarnings>0) std::cout << "$$$$$$$$$ WARNING $$$$$$$$$" << endl << nwarnings << " warnings have been generated: check the file " << Filenames::WARNINGS << endl << "$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
   delete[] rate_const;
   delete[] vel_skimmer;
