@@ -1,3 +1,3 @@
-./bin/skimmer_win.x < $1
-./bin/densityandrate_win.x < $1
-./bin/apitof_pinhole.x < $1
+./bin/skimmer_win < $1
+./bin/densityandrate_win < $1
+./bin/apitof_pinhole < $1
