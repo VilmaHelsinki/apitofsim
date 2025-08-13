@@ -1724,35 +1724,6 @@ void update_rot_vel_old(double * omega, double rot_energy, double inertia)
 }
 
 // Draw normal velocity of carrier gas
-void draw_u_norm(double du, double boundary_u, double &u_norm, double theta, float n, float mobility_gas, float mobility_gas_inv, float R, double v_cluster_norm, double costheta, ofstream &warnings, int &nwarnings)
-{
-  double r=unif(gen);
-  double c;
-  double integral=0.0;
-
-
-  if(v_cluster_norm*costheta > boundary_u)
-  {
-    u_norm=-boundary_u;
-  }
-  else  u_norm=-v_cluster_norm*costheta;
-
-  while(r>integral && u_norm<boundary_u)
-  {
-    c=distr_u(u_norm,theta, n, mobility_gas, mobility_gas_inv, R, v_cluster_norm);
-    integral+=c*du;
-    u_norm+=du;
-  }
-
-  if(u_norm>boundary_u)
-  {
-    warn_omp(nwarnings, [&warnings, &r]() {
-      warnings << "u_norm exceeded boundary of the integration. random number r is: " << r << endl;
-    });
-  }
-}
-
-// Draw normal velocity of carrier gas UPDATE
 void draw_u_norm_skimmer(double z, double du, double boundary_u, double &u_norm, double theta, float n1, float n2, float m_gas, float mobility_gas, float mobility_gas_inv, float R, double * v_cluster, double v_gas, double pressure, double temperature, double first_chamber_end, double sk_end, double costheta, ofstream &warnings, int &nwarnings)
 {
   double r=unif(gen);
