@@ -106,6 +106,7 @@ int main()
   unsigned long long root_seed = root_gen();
 
   time_t start;
+  time_t loop_start;
   time_t end;
 
   int seconds_tot;
@@ -464,6 +465,7 @@ int main()
   }
   // All firstprivate variables *should* be constant within the loop
   // Truly private variables are declared in the loop
+  time(&loop_start);
   #pragma omp parallel for \
     default(none) \
     firstprivate( \
@@ -767,6 +769,7 @@ int main()
     probabilities.close();
   }
 
+  std::cout << endl << "<loop_time>" << difftime(end, loop_start) << "</loop_time>" << endl << endl;
   time(&end);
   seconds_tot=difftime(end,start);
   hours=(int) (seconds_tot/3600);
