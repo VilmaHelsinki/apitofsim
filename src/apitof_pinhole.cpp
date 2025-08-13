@@ -239,7 +239,7 @@ int main()
   ofstream pinhole;
 
 
-  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+  if (LOGLEVEL >= LOGLEVEL_MIN) {
     collisions.open(Filenames::COLLISIONS);
     collisions << setprecision(12) << std::scientific;
     intenergy.open(Filenames::INTENERGY);
@@ -321,7 +321,7 @@ int main()
     nullptr  // tolerance
   );
 
-  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+  if (LOGLEVEL >= LOGLEVEL_MIN) {
     probabilities.open(file_probabilities,std::ios_base::app);
     probabilities << setprecision(6) << std::scientific;
   }
@@ -386,7 +386,7 @@ int main()
   second_chamber_end=L0+Lsk+L1+L2+L3;
   total_length=second_chamber_end;
 
-  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+  if (LOGLEVEL >= LOGLEVEL_MIN) {
     std::cout << "Physical quantities:" << endl;
     std::cout << "L1: " << first_chamber_end  << " m" << endl;
     std::cout << "L2: " << sk_end << " m"  << endl;
@@ -406,7 +406,7 @@ int main()
   P1=pressure_first;
   P2=pressure_second;
   gas_mean_free_path=mean_free_path(R_gas,kT,P2);
-  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+  if (LOGLEVEL >= LOGLEVEL_MIN) {
     std::cout << "Cluster charge sign: " << cluster_charge_sign << endl;
     std::cout << "Pressure 1st chamber: " << P1 << " Pa" << endl;
     std::cout << "Pressure 2nd chamber: " << P2 << " Pa" << endl;
@@ -417,7 +417,7 @@ int main()
   }
   n1=particle_density(P1,kT);
   n2=particle_density(P2,kT);
-  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+  if (LOGLEVEL >= LOGLEVEL_MIN) {
     std::cout << "Fragmentation energy: " << bonding_energy/boltzmann << " K (" << bonding_energy*kcal << " kcal/mol)" << endl;
     std::cout << "Cluster mass: " << m_ion << " Kg" << endl;
     std::cout << "Inertia momentum: " << inertia << " kg*m^2" << endl;
@@ -441,7 +441,7 @@ int main()
   dt2=1.0e-3/coll_freq(n2, mobility_gas, mobility_gas_inv, R_tot, 0.0);
   if(dt2>1.0/radiofrequency/1000.0) dt2=1.0/radiofrequency/1000.0;
 
-  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+  if (LOGLEVEL >= LOGLEVEL_MIN) {
     std::cout << "Time step t1: " << dt1 << " s"<< endl;
     std::cout << "Time step t2: " << dt2 << " s"<< endl<< endl;
   }
@@ -452,7 +452,7 @@ int main()
   n_escaped_total=0;
   n_fragmented_total=0;
 
-  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+  if (LOGLEVEL >= LOGLEVEL_MIN) {
     probabilities << "#1_FragmentationEnergy 2_SurvivalProbability 3_Error" << endl;
     fragments << "#1_Realization 2_Time 3_Position 4_FragmentationZone 5_PositionOfCollision 6_CollisionZone 7_VelocityAtCollision" << endl;
   }
@@ -460,7 +460,7 @@ int main()
   //cout << bin_width_rate << endl;
   //evaluate_lifetime(kT,density_cluster,energies_density,m_max_density, m_max_rate, rate_const, bonding_energy, bin_width_rate);
   // N realizations
-  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+  if (LOGLEVEL >= LOGLEVEL_MIN) {
     std::cout << "Simulating dynamics... (Fragments *, Intacts -)" << endl;
   }
   // All firstprivate variables *should* be constant within the loop
@@ -730,13 +730,13 @@ int main()
   }
   else
   {
-    if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+    if (LOGLEVEL >= LOGLEVEL_MIN) {
       //cout << std::defaultfloat << " 100%" << " Intacts: " << setw(5) << setfill(' ') << n_escaped << " | Fragments: " << setw(5) << setfill (' ') << n_fragmented << " | Survival probability: "  << std::setprecision(3) << 1.0*n_escaped/(n_escaped+n_fragmented)  << endl;
       std::cout << "Simulation completed" << endl << endl;
       //cout << std::defaultfloat << "Intacts: " << setw(5) << setfill(' ') << n_escaped << " | Fragments: " << setw(5) << setfill (' ') << n_fragmented << " | Survival probability: "  << std::setprecision(3) << 1.0*n_escaped/(n_escaped+n_fragmented)  << endl;
     }
   }
-  if (LOGLEVEL >= LOGLEVEL_NORMAL) {
+  if (LOGLEVEL >= LOGLEVEL_MIN) {
     //cout << "\033[F\033[J";
     std::cout << "Realizations: " << realizations <<endl;
     std::cout << "Fragments: "<< n_fragmented_total << endl;
