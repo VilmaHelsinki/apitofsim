@@ -21,7 +21,7 @@ all-compilers: ${BINS_ALL_COMPILERS}
 
 # Default compiler
 bin/%: src/%.cpp ${COMMON_UTILS}
-	${CC} ${CFLAGS} $< ${OPENMP} -o $@
+	${CC} ${CFLAGS} $< -o $@
 
 # Intel compiler
 bin/%.icx: src/%.cpp ${COMMON_UTILS}
