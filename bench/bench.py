@@ -9,6 +9,7 @@ from re import search
 def mkp(path): makedirs(path, exist_ok=True)
 VMS_BIN = environ["VMS_BIN"]
 BASE_INPUTS = environ["BASE_INPUTS"]
+COMPILERS = environ.get("COMPILERS", "").split(",")
 
 def make_config(outdir, realizations):
     f"""
@@ -74,30 +75,38 @@ run(pjoin(VMS_BIN, "skimmer_win"), input=common_config, text=True)
 run(pjoin(VMS_BIN, "densityandrate_win"), input=common_config, text=True)
 
 times = {}
-for cores in range(1, 9):
-    out = pjoin("benchwork", f"output_{cores}")
-    mkp(out)
-    for fn in listdir(common_out):
-        copyfile(pjoin(common_out, fn), pjoin(out, fn))
-    config = make_config(out, 100)
-    bin_path = pjoin(VMS_BIN, "apitof_pinhole")
-    check_output("sync; echo 3 | sudo tee /proc/sys/vm/drop_caches", shell=True)
-    time_start = time.time()
-    usage_start = resource.getrusage(resource.RUSAGE_CHILDREN)
-    output = check_output(bin_path, input=config, text=True, env={"OMP_NUM_THREADS": str(cores)})
-    match = search(r"<loop_time>([^<]+)</loop_time>", output)
-    usage_end = resource.getrusage(resource.RUSAGE_CHILDREN)
-    time_end = time.time()
-    cpu_time = usage_end.ru_utime - usage_start.ru_utime
-    sys_time = usage_end.ru_stime - usage_start.ru_stime
-    wall_time = time_end - time_start
-    times[cores] = {
-        "cpu_time": cpu_time,
-        "sys_time": sys_time,
-        "wall_time": wall_time,
-        "loop_time": float(match.group(1)) if match else None,
-        "iters_per_second": 100 / float(match.group(1)) if match else None,
-    }
+for compiler in COMPILERS:
+    for cores in range(1, 9):
+        out = pjoin("benchwork", f"output_{cores}")
+        mkp(out)
+        for fn in listdir(common_out):
+            copyfile(pjoin(common_out, fn), pjoin(out, fn))
+        config = make_config(out, 100)
+        bin_path = pjoin(VMS_BIN, "apitof_pinhole")
+        if compiler:
+            bin_path += "." + compiler
+        check_output("sync; echo 3 | sudo tee /proc/sys/vm/drop_caches", shell=True)
+        time_start = time.time()
+        usage_start = resource.getrusage(resource.RUSAGE_CHILDREN)
+        output = check_output(bin_path, input=config, text=True, env={"OMP_NUM_THREADS": str(cores)})
+        match = search(r"<loop_time>([^<]+)</loop_time>", output)
+        usage_end = resource.getrusage(resource.RUSAGE_CHILDREN)
+        time_end = time.time()
+        cpu_time = usage_end.ru_utime - usage_start.ru_utime
+        sys_time = usage_end.ru_stime - usage_start.ru_stime
+        wall_time = time_end - time_start
+        key = (
+            ("cores", cores),
+        )
+        if compiler:
+            key += ("compiler", compiler)
+        times[key] = {
+            "cpu_time": cpu_time,
+            "sys_time": sys_time,
+            "wall_time": wall_time,
+            "loop_time": float(match.group(1)) if match else None,
+            "iters_per_second": 100 / float(match.group(1)) if match else None,
+        }
 
 with open("times.pkl", "wb") as outf:
     pickle.dump(times, outf)
