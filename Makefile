@@ -1,15 +1,15 @@
 # Makefile for APITOF codes
 
 CC = g++
-CFLAGS = -std=c++11 -O3 -Wall -fopenmp -march=native
+CFLAGS = -std=c++11 -O3 -Wall -fopenmp -march=native -mtune=native
+ICXFLAGS = -fiopenmp -std=c++11 -O3 -Wall -march=native -mtune=native
+
 COMMON_UTILS = src/utils.h
 BINS_DEFAULT = bin/apitof_pinhole bin/densityandrate_win bin/skimmer_win
 BINS_ICX = $(BINS_DEFAULT:=.icx)
 BINS_GCC = $(BINS_DEFAULT:=.gcc)
 BINS_CLANG = $(BINS_DEFAULT:=.clang)
 BINS_ALL_COMPILERS = $(BINS_ICX) $(BINS_GCC) $(BINS_CLANG)
-
-ICXFLAGS = -fiopenmp -std=c++11 -O3 -Wall
 
 # Compile all codes
 .PHONY: all all-compilers clean clean-compilers clean-all
