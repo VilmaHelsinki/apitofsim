@@ -2,7 +2,7 @@
 
 CC = g++
 CFLAGS = -std=c++11 -O3 -Wall -fopenmp -march=native -mtune=native
-ICXFLAGS = -fiopenmp -std=c++11 -O3 -Wall -march=native -mtune=native
+ICXFLAGS = -fiopenmp -std=c++11 -O3 -Wall -march=native -mtune=native -fp-model=precise
 
 COMMON_UTILS = src/utils.h
 BINS_DEFAULT = bin/apitof_pinhole bin/densityandrate_win bin/skimmer_win
