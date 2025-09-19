@@ -1,2 +1,8 @@
 /attic/
 /.vscode/
+/subprojects/*
+!/subprojects/*.wrap
+/uv.lock
+/.python-version
+/compile_commands.json
+/.cache/
